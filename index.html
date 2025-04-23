@@ -82,12 +82,8 @@
     }
 
     @keyframes neonGlow {
-      from {
-        box-shadow: 0 0 10px #ff00c8;
-      }
-      to {
-        box-shadow: 0 0 25px #ff00c8;
-      }
+      from { box-shadow: 0 0 10px #ff00c8; }
+      to   { box-shadow: 0 0 25px #ff00c8; }
     }
   </style>
 </head>
@@ -133,9 +129,14 @@
 
       makeMove(index, currentPlayer);
 
-      if (vsBot && !gameOver && currentPlayer === 'O') {
-        setTimeout(botMove, 400);
-      }
+      if (!vsBot || gameOver) return;
+
+      // Бот ходит после игрока
+      currentPlayer = 'O';
+      setTimeout(() => {
+        botMove();
+        currentPlayer = 'X';
+      }, 400);
     }
 
     function makeMove(index, player) {
@@ -154,17 +155,20 @@
       if (!cells.includes(null)) {
         winnerDisplay.textContent = 'Ничья!';
         gameOver = true;
-        return;
       }
-
-      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
     }
 
     function botMove() {
       const empty = cells.map((val, i) => val === null ? i : null).filter(v => v !== null);
       if (empty.length === 0) return;
       const choice = empty[Math.floor(Math.random() * empty.length)];
-      makeMove(choice, currentPlayer);
+      makeMove(choice, 'O');
+    }
+
+    function updateBoard() {
+      cells.forEach((cell, i) => {
+        board.children[i].textContent = cell || '';
+      });
     }
 
     function checkWin(player) {
